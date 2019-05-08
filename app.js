@@ -19,11 +19,11 @@ class App {
     this.results = new ResultsScreen(resultElement);
 
     // Uncomment this pair of lines to see the "flashcard" screen:
-    // this.menu.hide();
-    // this.flashcards.show();
+    this.menu.hide();
+    this.flashcards.show();
 
     // Uncomment this pair of lines to see the "results" screen:
-    // this.menu.hide();
-    // this.results.show();
+    this.menu.hide();
+    this.results.show();
   }
 }
