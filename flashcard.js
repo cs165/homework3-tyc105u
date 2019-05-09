@@ -11,11 +11,30 @@ class Flashcard {
     this.containerElement = containerElement;
 
     this._flipCard = this._flipCard.bind(this);
+    this.onDragEnd = this.onDragEnd.bind(this);
+    this.onDragStart = this.onDragStart.bind(this);
+    this.onDragMove = this.onDragMove.bind(this);
+
+    this.originX = null;
+    this.originY = null;
+    this.offsetX = 0;
+    this.offsetY = 0;
+    this._X = 0;
+    this._Y = 0;
+    this.dragStarted = false;
+
 
     this.flashcardElement = this._createFlashcardDOM(frontText, backText);
     this.containerElement.append(this.flashcardElement);
 
     this.flashcardElement.addEventListener('pointerup', this._flipCard);
+    this.FlashcardDOM = this._createFlashcardDOM.bind(this);
+
+    this.flashcardElement.addEventListener('pointerdown', this.onDragStart);
+    this.flashcardElement.addEventListener('pointerup', this.onDragEnd);
+    this.flashcardElement.addEventListener('pointermove', this.onDragMove);
+
+    this.flashcardElement.style.display='none';
   }
 
   // Creates the DOM object representing a flashcard with the given
@@ -53,5 +72,56 @@ class Flashcard {
 
   _flipCard(event) {
     this.flashcardElement.classList.toggle('show-word');
+  }
+
+  onDragStart(event){
+    this.originX = event.clientX;
+    this.originY = event.clientY;
+    this.dragStarted = true;
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  onDragMove(event){
+    if (!this.dragStarted) {
+      return;
+    }
+    event.preventDefault();
+
+    var color = document.querySelector('body');
+    this._X = event.clientX - this.originX;
+    if(this._X > 150 || this._X < -150)
+      color.style.backgroundColor = '#97b7b7';
+    else
+      color.style.backgroundColor = '#d0e6df'; 
+
+    this._Y = event.clientY - this.originY;
+
+    const translateX = this.offsetX + this._X;
+    const translateY = this.offsetY + this._Y;
+    event.currentTarget.style.transform = 'translate(' +
+      translateX + 'px, ' + translateY + 'px) rotate(' + translateX * 0.2 + 'deg)';  
+  }
+
+  onDragEnd(event){
+    this.dragStarted = false;
+    this.offsetX += event.clientX - this.originX;
+    this.offsetY += event.clientY - this.originY;
+
+    var color = document.querySelector('body');
+    color.style.backgroundColor = '#d0e6df';
+
+    if(this._X > 150) 
+      document.dispatchEvent(new CustomEvent('right'));
+    else if(this._X < -150) 
+      document.dispatchEvent(new CustomEvent('left'));
+    else{
+      this._X = 0;
+      this._Y = 0;
+      this.originX = null;
+      this.originY = null;
+      this.offsetX = 0;
+      this.offsetY = 0;
+    }
+
   }
 }
