@@ -15,26 +15,24 @@ class Flashcard {
     this.onDragStart = this.onDragStart.bind(this);
     this.onDragMove = this.onDragMove.bind(this);
 
+    this.translateX = 0;
+    this.translateY = 0;
     this.originX = null;
     this.originY = null;
     this.offsetX = 0;
     this.offsetY = 0;
-    this._X = 0;
-    this._Y = 0;
-    this.dragStarted = false;
-
-
+    
     this.flashcardElement = this._createFlashcardDOM(frontText, backText);
     this.containerElement.append(this.flashcardElement);
 
     this.flashcardElement.addEventListener('pointerup', this._flipCard);
-    this.FlashcardDOM = this._createFlashcardDOM.bind(this);
+    this._createFlashcardDOM = this._createFlashcardDOM.bind(this);
 
     this.flashcardElement.addEventListener('pointerdown', this.onDragStart);
-    this.flashcardElement.addEventListener('pointerup', this.onDragEnd);
     this.flashcardElement.addEventListener('pointermove', this.onDragMove);
-
-    this.flashcardElement.style.display='none';
+    this.flashcardElement.addEventListener('pointerup', this.onDragEnd);
+  
+    this.dragStarted = false;
   }
 
   // Creates the DOM object representing a flashcard with the given
@@ -63,65 +61,86 @@ class Flashcard {
     const definitionSide = document.createElement('div');
     definitionSide.classList.add('flashcard');
     definitionSide.classList.add('definition');
-    definitionSide.textContent= backText;
+    definitionSide.textContent = backText;
 
     cardContainer.appendChild(wordSide);
     cardContainer.appendChild(definitionSide);
     return cardContainer;
   }
 
-  _flipCard(event) {
+  _flipCard(event){
     this.flashcardElement.classList.toggle('show-word');
   }
 
   onDragStart(event){
+    this.flashcardElement.style.cssText="transition-duration:0.0s"; 
     this.originX = event.clientX;
     this.originY = event.clientY;
     this.dragStarted = true;
     event.currentTarget.setPointerCapture(event.pointerId);
   }
-
-  onDragMove(event){
-    if (!this.dragStarted) {
+  onDragMove(event) {
+    if (!this.dragStarted)
       return;
-    }
+    
     event.preventDefault();
+    this.translateX = event.clientX - this.originX;
+    this.translateY = event.clientY - this.originY;
+    const translateX = this.offsetX + this.translateX;
+    const translateY = this.offsetY + this.translateY;
+    event.currentTarget.style.transform = 'translate(' +
+      translateX + 'px, ' + translateY + 'px) rotate(' + translateX * 0.2 + 'deg)';
 
     var color = document.querySelector('body');
-    this._X = event.clientX - this.originX;
-    if(this._X > 150 || this._X < -150)
+    if(this.translateX > 150 || this.translateX < -150)
       color.style.backgroundColor = '#97b7b7';
     else
-      color.style.backgroundColor = '#d0e6df'; 
-
-    this._Y = event.clientY - this.originY;
-
-    const translateX = this.offsetX + this._X;
-    const translateY = this.offsetY + this._Y;
-    event.currentTarget.style.transform = 'translate(' +
-      translateX + 'px, ' + translateY + 'px) rotate(' + translateX * 0.2 + 'deg)';  
+      color.style.backgroundColor = '#d0e6df';
   }
-
-  onDragEnd(event){
+  onDragEnd(event) {
     this.dragStarted = false;
     this.offsetX += event.clientX - this.originX;
     this.offsetY += event.clientY - this.originY;
 
-    var color = document.querySelector('body');
-    color.style.backgroundColor = '#d0e6df';
-
-    if(this._X > 150) 
+    if (this.translateX > 150) {
       document.dispatchEvent(new CustomEvent('right'));
-    else if(this._X < -150) 
+    }
+    if (this.translateX < -150) {
       document.dispatchEvent(new CustomEvent('left'));
+    }
     else{
-      this._X = 0;
-      this._Y = 0;
-      this.originX = null;
-      this.originY = null;
-      this.offsetX = 0;
-      this.offsetY = 0;
+      this.flashcardElement.style.cssText="transition-duration:0.6s"
+      this.translateX = 0;
+      this.translateY = 0;
+    this.originX = null;
+    this.originY = null;
+    this.offsetX = 0;
+    this.offsetY = 0;
+;
     }
 
+    var color = document.querySelector('body');
+    color.style.backgroundColor = '#d0e6df';
   }
+  
+  _createFlashcardDOM(frontText, backText) {
+    const cardContainer = document.createElement('div');
+    cardContainer.classList.add('flashcard-box');
+    cardContainer.classList.add('show-word');
+
+    const wordSide = document.createElement('div');
+    wordSide.classList.add('flashcard');
+    wordSide.classList.add('word');
+    wordSide.textContent = frontText;
+
+    const definitionSide = document.createElement('div');
+    definitionSide.classList.add('flashcard');
+    definitionSide.classList.add('definition');
+    definitionSide.textContent = backText;
+
+    cardContainer.appendChild(wordSide);
+    cardContainer.appendChild(definitionSide);
+    return cardContainer;
+  }
+
 }

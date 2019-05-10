@@ -9,20 +9,20 @@
 class ResultsScreen {
   constructor(containerElement) {
     this.containerElement = containerElement;
-
+    this.m = containerElement.querySelector('.to-menu');
     this.cont = containerElement.querySelector('.continue');
-    this.menu = containerElement.querySelector('.to-menu');
 
-    this.cont.addEventListener('click',this.Restart);
-    this.menu.addEventListener('click',this.toMenu);
+    this.m.addEventListener('click',this.dispMenu);
+    this.cont.addEventListener('click',this.dispCont);
   }
-  Restart(event){
-    var A = new CustomEvent('start-over');
-    document.dispatchEvent(A);
+
+  dispMenu(event){
+    var menu_open = new CustomEvent('menu_open');
+    document.dispatchEvent(menu_open);
   }
-  toMenu(event){
-    var B = new CustomEvent('menu-open');
-    document.dispatchEvent(B);
+  dispCont(event){
+    var start_over = new CustomEvent('start_over');
+    document.dispatchEvent(start_over);
   }
 
   show(numberCorrect, numberWrong) {
@@ -32,5 +32,4 @@ class ResultsScreen {
   hide() {
     this.containerElement.classList.add('inactive');
   }
-
 }
