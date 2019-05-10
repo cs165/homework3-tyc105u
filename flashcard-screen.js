@@ -1,12 +1,3 @@
-// TODO(you): Modify the class in whatever ways necessary to implement
-// the flashcard app behavior.
-//
-// You may need to do things such as:
-// - Changing the constructor parameters
-// - Rewriting some of the existing methods, such as changing code in `show()`
-// - Adding methods
-// - Adding additional fields
-
 class FlashcardScreen {
   constructor(containerElement) {
     this.containerElement = containerElement;
@@ -30,7 +21,7 @@ class FlashcardScreen {
     this.nextEnd = new Array();
   }
 
-  toRight(){
+  toRight() {
     this.yes++;
     var correctOrNot = document.querySelectorAll('.correct');
     correctOrNot[0].textContent = this.yes;
@@ -38,7 +29,7 @@ class FlashcardScreen {
 
     var boxes = document.querySelector('#flashcard-container');
     var box = document.querySelector('.flashcard-box');
-    if(box != null)
+    if (box != null)
       boxes.removeChild(box);
 
     let container = document.querySelector('#flashcard-container');
@@ -48,15 +39,15 @@ class FlashcardScreen {
     this.x = this.x + 1;
 
     var count = this.Front.length + 1;
-    if(count == this.x){
+    if (count == this.x) {
       if (box != null)
         box = document.querySelector('.flashcard-box');
       boxes.removeChild(box);
 
       var button = document.querySelector('.continue');
       var percent = document.querySelector('.percent');
-      var test = this.yes * (100) / (this.yes + this.no);
-      test = Math.round(test * 10) / 10;
+      var test = this.yes * (1000) / (this.yes + this.no);
+      test = Math.round(test) / 10;
       percent.textContent = test;
 
       if (test < 100)
@@ -69,19 +60,19 @@ class FlashcardScreen {
     }
   }
 
-  toLeft(){
+  toLeft() {
     this.no++;
-    var correctOrNot = document.querySelectorAll('.incorrect');  
+    var correctOrNot = document.querySelectorAll('.incorrect');
     correctOrNot[0].textContent = this.no;
     correctOrNot[1].textContent = this.no;
 
     this.nextEnd[this.number] = this.End[this.x - 1]
-    this.nextFront[this.number] = this.Front[this.x - 1]; 
+    this.nextFront[this.number] = this.Front[this.x - 1];
     this.number++;
 
     var boxes = document.querySelector('#flashcard-container');
     var box = document.querySelector('.flashcard-box');
-    if(box != null)
+    if (box != null)
       boxes.removeChild(box);
 
     let container = document.querySelector('#flashcard-container');
@@ -89,19 +80,19 @@ class FlashcardScreen {
     let end = this.End[this.x];
     this.play = new Flashcard(container, front, end);
     this.x = this.x + 1;
-    
+
     var count = this.Front.length + 1;
-    if(count == this.x){
-      if(box != null)
+    if (count == this.x) {
+      if (box != null)
         box = document.querySelector('.flashcard-box');
       boxes.removeChild(box);
 
       var button = document.querySelector('.continue');
       var percent = document.querySelector('.percent');
-      var test = this.yes * (100) / (this.yes + this.no);
-      test = Math.round(test * 10) / 10;
+      var test = this.yes * (1000) / (this.yes + this.no);
+      test = Math.round(test) / 10;
       percent.textContent = test;
-      if(test < 100)
+      if (test < 100)
         button.textContent = 'Continue';
 
       var detailedResult = new CustomEvent('result_open', { 'detail': test });
@@ -113,8 +104,8 @@ class FlashcardScreen {
     this.containerElement.classList.remove('inactive');
 
     this.name = x;
-    if(x == 100){
-      this.no = 0; 
+    if (x == 100) {
+      this.no = 0;
 
       this.Front = new Array();
       this.End = new Array();
@@ -127,27 +118,38 @@ class FlashcardScreen {
       var end = this.End[0];
       this.play = new Flashcard(container, front, end);
       this.number = 0;
-      this.x = 1; 
-     
+      this.x = 1;
+
       var correctOrNot = document.querySelectorAll('.incorrect');
       correctOrNot[0].textContent = this.no;
       correctOrNot[1].textContent = this.no;
     }
-    else{  
-      for(let i in FLASHCARD_DECKS)
-        if(x == FLASHCARD_DECKS[i].title)
-          for(let j in FLASHCARD_DECKS[i].words){
+    else {
+      this.Front = new Array();
+      this.End = new Array();
+      
+      for (let i in FLASHCARD_DECKS)
+        if (x == FLASHCARD_DECKS[i].title)
+          for (let j in FLASHCARD_DECKS[i].words) {
             this.Front[this.y] = j;
             this.End[this.y++] = FLASHCARD_DECKS[i].words[j];
           }
-        
+      var correctOrNot = document.querySelectorAll('.incorrect');
+      var continueSelect = document.querySelectorAll('.correct');
+
+      continueSelect[0].textContent = 0;
+      continueSelect[1].textContent = 0;
+
+      correctOrNot[0].textContent = 0;
+      correctOrNot[1].textContent = 0;
+
       var container = document.querySelector('#flashcard-container');
       var front = this.Front[0];
       var end = this.End[0];
       this.play = new Flashcard(container, front, end);
     }
-    this.nextEnd = [];
-    this.nextFront = [];
+    this.nextEnd = new Array();
+    this.nextFront = new Array();
   }
 
   hide() {
