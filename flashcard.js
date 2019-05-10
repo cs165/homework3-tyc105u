@@ -10,7 +10,7 @@ class Flashcard {
   constructor(containerElement, frontText, backText) {
     this.containerElement = containerElement;
 
-    this._flipCard = this._flipCard.bind(this);
+    this.showHand = this.showHand.bind(this);
     this.onDragEnd = this.onDragEnd.bind(this);
     this.onDragStart = this.onDragStart.bind(this);
     this.onDragMove = this.onDragMove.bind(this);
@@ -22,11 +22,11 @@ class Flashcard {
     this.offsetX = 0;
     this.offsetY = 0;
     
-    this.flashcardElement = this._createFlashcardDOM(frontText, backText);
+    this.flashcardElement = this.DOM(frontText, backText);
     this.containerElement.append(this.flashcardElement);
 
-    this.flashcardElement.addEventListener('pointerup', this._flipCard);
-    this._createFlashcardDOM = this._createFlashcardDOM.bind(this);
+    this.flashcardElement.addEventListener('pointerup', this.showHand);
+    this.DOM = this.DOM.bind(this);
 
     this.flashcardElement.addEventListener('pointerdown', this.onDragStart);
     this.flashcardElement.addEventListener('pointermove', this.onDragMove);
@@ -48,7 +48,7 @@ class Flashcard {
   // </div>
   // and returns a reference to the root of that snippet, i.e. the
   // <div class="flashcard-box">
-  _createFlashcardDOM(frontText, backText) {
+  DOM(frontText, backText) {
     const cardContainer = document.createElement('div');
     cardContainer.classList.add('flashcard-box');
     cardContainer.classList.add('show-word');
@@ -68,7 +68,7 @@ class Flashcard {
     return cardContainer;
   }
 
-  _flipCard(event){
+  showHand(event){
     this.flashcardElement.classList.toggle('show-word');
   }
 
@@ -123,24 +123,6 @@ class Flashcard {
     color.style.backgroundColor = '#d0e6df';
   }
   
-  _createFlashcardDOM(frontText, backText) {
-    const cardContainer = document.createElement('div');
-    cardContainer.classList.add('flashcard-box');
-    cardContainer.classList.add('show-word');
 
-    const wordSide = document.createElement('div');
-    wordSide.classList.add('flashcard');
-    wordSide.classList.add('word');
-    wordSide.textContent = frontText;
-
-    const definitionSide = document.createElement('div');
-    definitionSide.classList.add('flashcard');
-    definitionSide.classList.add('definition');
-    definitionSide.textContent = backText;
-
-    cardContainer.appendChild(wordSide);
-    cardContainer.appendChild(definitionSide);
-    return cardContainer;
-  }
 
 }
